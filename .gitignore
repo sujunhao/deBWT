@@ -1,0 +1,6 @@
+_deBWT/
+doc/
+*~
+*.out
+*.o
+*.swap
