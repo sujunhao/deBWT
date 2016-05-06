@@ -4,3 +4,7 @@ doc/
 *.out
 *.o
 *.swap
+*.fa
+out
+tt
+deBWT
