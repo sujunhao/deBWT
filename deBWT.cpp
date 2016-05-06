@@ -78,14 +78,15 @@ int main()
     K_mask = MASK >> 2;
     sort(K2, K2+K2_index, cmp);
     // for (size_t i=0; i<100; ++i) cout << std::bitset<32>(K2[i]) << endl;
-    
+
 
     //-----------------------------------for each k_mer in dna string, use binary search to find k_mer in K
-    //-----------------------------------if is multip out, construct branch code
-    //-----------------------------------if is multip in, store the branch code
+    //-----------------------------------note that K len is k_mer+2
+    //-----------------------------------if is multip out, construct branch code (index++)
+    //-----------------------------------if is multip in, store the branch code index(**** index should +1 ****)
 
 
-
+  	//-----------------------------------use K2 and K2c to construct FM-index
     //-----------------------------------handel the last k-1 k_mer (ATG$, TG$, G$)
     //-----------------------------------insert in BWT, concern as case 1 
 
