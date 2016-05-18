@@ -23,6 +23,18 @@ size_t KMER=20;
 size_t KMER_N=4864385;
 uint64_t K_mask = 0xffffffff;
 
+typedef struct kmernote {
+    uint64_t km;
+    uint32_t in;
+    uint32_t index;
+}KMER_NODE;
+
+
+bool cmp(const uint64_t a, const uint64_t b)
+{
+    // return a<b;
+    return (a<<2) < (b<<2);
+}
 int main()
 {
 	char i_f[100]="E.coli.fa";
@@ -34,7 +46,7 @@ int main()
     out.open(o_f);
 
     FILE *inJF;
-    inJF = fopen(j_f, "r");
+    inJF = fopen(j_f, "rb");
 
 
 
@@ -46,23 +58,65 @@ int main()
 
 
     //-----------------------------------k_mer counting get from jellyfish
-    uint64_t *K2c;
-    size_t kmer=KMER, kmer2=KMER_N;
+    uint64_t *K2;
+    size_t kmer=KMER, kmer2=KMER+2, kmer2len=KMER_N;
 
-    K2c = new uint64_t[kmer2];
-    memset(K2c, 0, sizeof(K2c));
+    K2 = new uint64_t[kmer2len];
 
     int tn;
-    // printf("asd\n");
     char tkmer[100];
-    for (size_t i=0; i<KMER_N; ++i)
+
+    uint64_t tmp = 0, tar;
+    uint64_t MASK2 = -1, k2clen=10;
+    MASK2 = MASK2 >> (64 - kmer2*2);
+
+    for (size_t i=0; i<kmer2len; ++i)
     {
 
-        // fgets(tkmer, 100, inJF);
-        fscanf(inJF, ">%d%s\n", &tn, tkmer);
-        {printf(">%d\n", tn); puts(tkmer);}
+        fscanf(inJF, ">%d\n%s\n", &tn, tkmer);
+        tmp=0;
+        for (size_t j=0; j<kmer+2; ++j) tmp = (tmp << 2) | get_c[tkmer[j]];
+        tar = tmp << (64 - kmer2*2);
+        tar = tar|((uint64_t)tn);
 
+        K2[i]=tar;
+        // if (i<100){
+        //     printf("%d %s ", tn, tkmer);
+            // cout << std::bitset<64>(tar) << endl;
+            
+        // }
     }
+
+    //-----------------------------------sort kmer+2
+    sort(K2, K2+kmer2len, cmp);
+    
+    uint64_t thekmer;
+    for (size_t i=0; i<kmer2len; ++i)
+    {
+        if (i<100){
+            // printf("%d %s ", tn, tkmer);
+            thekmer = K2[i];
+            thekmer = thekmer << 2;
+            thekmer = thekmer >> (64 - kmer*2);
+            cout << std::bitset<64>(K2[i]) << endl << std::bitset<64>(thekmer) << endl;
+            
+        }
+    }
+
+    //-----------------------------------mark multip in and out
+
+    // for (size_t i=0; i<kmer2len; ++i)
+    // {
+    //     //-----------------------------------splite the center kmer
+    //     tkmer = K2[i];
+    //     tkmer << 2;
+    //     tkmer >> (64 - kmer*2);
+
+    //     //-----------------------------------check multip out
+    //     //-----------------------------------mark the multip in number
+    //     //-----------------------------------assign the index
+
+    // }
 
  //    size_t kmer=KMER, kmer2=((KMER+2)<<1);
  //    PX(kmer2);
@@ -177,8 +231,7 @@ int main()
     //-----------------------------------handel the last k-1 k_mer (ATG$, TG$, G$)
     //-----------------------------------insert in BWT, concern as case 1 
 
-	// delete [] K2;
-    delete [] K2c;
+	delete [] K2;
     inRef.close();
     out.close();
     fclose(inJF);
