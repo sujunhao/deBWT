@@ -186,6 +186,8 @@ int main()
     uint64_t mask_k = -1;
     mask_k = mask_k << (64-kmer_l) >> (64-kmer_l);
     // cout << std::bitset<64>(mask_k) << endl;
+    string bc(dna_f);
+    size_t bc_index=0;
     for (size_t i=0, index; i<dna_z; ++i)
     {
         tmp = (tmp << 2) | get_c[dna_f[i]];
@@ -203,17 +205,22 @@ int main()
 
 
 
-                //if is multip out
+                //if is multip out write dna_f[i+1] in bc
                 if (io_info[index]&mask_out)
                 {
-                    cout << std::bitset<64>(tar) << endl;
-                    cout << std::bitset<64>(io_info[index]) << endl;
+                    // cout << std::bitset<64>(tar) << endl;
+                    // cout << std::bitset<64>(io_info[index]) << endl;
+                    if (i+1<dna_z)
+                    {
+                        bc[bc_index++] = dna_f[i+1];
+                    }
+
                 }
                 //if is multip in
                 if (io_info[index]&mask_in)
                 {
-                    cout << std::bitset<64>(tar) << endl;
-                    cout << std::bitset<64>(io_info[index]) << endl;
+                    // cout << std::bitset<64>(tar) << endl;
+                    // cout << std::bitset<64>(io_info[index]) << endl;
                 }
             }
         }
