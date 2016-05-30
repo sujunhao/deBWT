@@ -35,19 +35,21 @@ size_t search_k(uint64_t n)
 {
     //binary search
     size_t l=0, r=klen-1, m;
+    cout << n << endl;
     while (l < r)
     {
         m = (l+r)/2;
         if (n<= K[m]) r = m;
         else l = m + 1;
+        cout << m << " " << K[m] << endl;
     }
     if (K[r] == n) return r;
     return -1;
 }
 int main()
 {
-	char i_f[100]="E.coli.fa";
-	char o_f[100]="out";
+    char i_f[100]="E.coli.fa";
+    char o_f[100]="out";
     char j_f[100]="mer_counts_dumps.fa";
     ifstream inRef;
     ofstream out;
@@ -167,18 +169,17 @@ int main()
             io_info[klen] = tmp_mask;
             K[klen] = (K2[i]&mask_c) >> (64-kmer2_l+2);
             ++klen;
-            // if (klen<100){
-            //     // cout << "Asd";
+            if (klen<100){
+                // cout << "Asd";
 
-            //     cout << i << " " << j << endl << std::bitset<64>(io_info[klen-1]) << endl << std::bitset<64>(io_info[klen-1]<<1>>1>>32) << endl
-            //     << (io_info[klen-1]<<1>>1>>32) << endl;
+                cout << klen-1 << endl << K[klen-1] << endl << std::bitset<64>(K[klen-1]) << endl;
                 
-            // }
+            }
         }
         i = j;
 
     }
-
+    cout << klen << endl;
     //-----------------------------------for each k_mer in dna string, use binary search to find k_mer in K
     //-----------------------------------if is multip out, construct branch code (index++)
     //-----------------------------------if is multip in, store the branch code index(**** index should +1 ****)
@@ -186,44 +187,28 @@ int main()
     uint64_t mask_k = -1;
     mask_k = mask_k << (64-kmer_l) >> (64-kmer_l);
     // cout << std::bitset<64>(mask_k) << endl;
-    for (size_t i=0, index; i<dna_z; ++i)
+    for (size_t i=0, index; i<1; ++i)
     {
-        tmp = (tmp << 2) | get_c[dna_f[i]];
-        if (i>=kmer-1)
-        {
-            tar = tmp&mask_k;
+            tar = 160809126;
             index = search_k(tar);
-            if (index!=-1)
-            {
-                // cout << std::bitset<64>(tar) << endl;
-                // cout << index << endl;
-                // if (index != -1)
-                // cout << std::bitset<64>(K[index]) << endl;
-                // cout << "~~~~\n";
-
-
-
-                //if is multip out
-                if (io_info[index]&mask_out)
-                {
-                    cout << std::bitset<64>(tar) << endl;
-                    cout << std::bitset<64>(io_info[index]) << endl;
-                }
-                //if is multip in
-                if (io_info[index]&mask_in)
-                {
-                    cout << std::bitset<64>(tar) << endl;
-                    cout << std::bitset<64>(io_info[index]) << endl;
-                }
-            }
-        }
+                 cout << std::bitset<64>(tar) << endl;
+                cout << index << endl;
+                if (index != -1)
+                cout << std::bitset<64>(K[index]) << endl;
+                cout << "~~~~\n";
+            // if (tmp != -1) 
+            // {
+            //     if (i<1000000) cout << std::bitset<64>(tar) << endl << std::bitset<64>(K[tmp]) << endl<< std::bitset<64>(io_info[tmp]) << endl;
+                
+            // }
+        
     }
 
-  	//-----------------------------------use K2 and K2c to construct FM-index
+    //-----------------------------------use K2 and K2c to construct FM-index
     //-----------------------------------handel the last k-1 k_mer (ATG$, TG$, G$)
     //-----------------------------------insert in BWT, concern as case 1 
 
-	delete [] K2;
+    delete [] K2;
     delete [] K;
     delete []io_info;
     inRef.close();
