@@ -90,17 +90,76 @@ int main()
     //-----------------------------------sort kmer+2
     sort(K2, K2+kmer2len, cmp);
     
+
+
+    //-----------------------------------use center kmer to mark multip in & out
+    //-----------------------------------mark multip [1]out muitip in number[31] and mutip in index[32]
+
+
+    uint64_t *io_info;
+    io_info = new uint64_t[kmer2len];
+
     uint64_t thekmer;
-    for (size_t i=0; i<kmer2len; ++i)
+    //the center kmer is ((thekmer << 2) >> (64 - kmer*2));
+    //first 2 is (thekmer >> 62)
+    //the last 2 is (thekmer << 2*(kmer+1) >> 62)
+    //the number is (thekmer << 2*(kmer+2) >> 64-2*(kmer+2))
+
+    //for splite the center, left ,right char and number;
+    uint64_t mask_c=-1, mask_l=-1, mask_r=-1, mask_n=-1;
+    mask_c = mask_c << 2 >> 2 >> (64 - 2*kmer2 + 2) << (64 - kmer2*2 + 2);
+    mask_l = mask_l >> 62 << 62;
+    mask_r = mask_r >> (64 - 2*kmer2) << (64 - 2*kmer2) << (kmer+1)*2 >> (kmer+1)*2;
+    mask_n = mask_n << (2*kmer2) >> (2*kmer2);
+
+    uint64_t mask_out=-1, mask_in=-1, mask_index=-1;
+    mask_out = mask_out >> 63 << 63;
+    mask_in = mask_in >> 32 << 32 << 1 >> 1;
+    mask_index = mask_index << 32 >> 32;
+
+    bool is_in=false, is_out=false;
+    // cout << std::bitset<64>(mask_out) << endl << std::bitset<64>(mask_in) << endl << 
+    // std::bitset<64>(mask_index)<< endl;
+
+    size_t kmer_index = 0, theindex = 0;
+    uint64_t tmp_mask, tmp_num;
+    for (size_t i=0, j, k; i<kmer2len;)
     {
-        if (i<100){
-            // printf("%d %s ", tn, tkmer);
-            thekmer = K2[i];
-            thekmer = thekmer << 2;
-            thekmer = thekmer >> (64 - kmer*2);
-            cout << std::bitset<64>(K2[i]) << endl << std::bitset<64>(thekmer) << endl;
-            
+        is_in=false; is_out=false; tmp_mask=0;
+        j = i+1;
+        while (j<kmer2len && (K2[j]&mask_c == K2[i]&mask_c))
+        {
+            if (K2[j]&mask_l != K2[i]&mask_l) is_out = true;
+            if (K2[j]&mask_r != K2[i]&mask_r) is_in = true;
+            if (is_in || is_out) printf("asd\n");
+            ++j;
         }
+        if (is_in || is_out)
+        {
+            cout << "Bin\n";
+            if (is_out) tmp_mask = tmp_mask|mask_out;
+            if (is_in)
+            {
+                tmp_num=0;
+                for (k = i; k<j; ++k)
+                {
+                    tmp_num += (K2[k]&mask_n);
+                }
+                tmp_mask = tmp_mask|(tmp_num<<32);
+                tmp_mask = tmp_mask|theindex;
+                theindex += tmp_num;
+            }
+            io_info[kmer_index++] = tmp_mask;
+            if (kmer_index<100){
+                cout << "Asd";
+
+                cout << std::bitset<64>(io_info[kmer_index-1]) << endl << std::bitset<64>(io_info[kmer_index-1]<<1>>1>>32) << endl
+                << (io_info[kmer_index-1]<<1>>1>>32) << endl;
+                
+            }
+        }
+        i = j;
+
     }
 
     //-----------------------------------mark multip in and out
