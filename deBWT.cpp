@@ -138,6 +138,7 @@ int main()
     size_t theindex = 0;
     klen = 0;
     uint64_t tmp_mask, tmp_num;
+
     for (size_t i=0, j, k; i<k2len;)
     {
         is_in=false; is_out=false; tmp_mask=0;
@@ -182,12 +183,19 @@ int main()
     //-----------------------------------for each k_mer in dna string, use binary search to find k_mer in K
     //-----------------------------------if is multip out, construct branch code (index++)
     //-----------------------------------if is multip in, store the branch code index(**** index should +1 ****)
+
+    uint64_t *BCN;
+    size_t BCN_size = (theindex);
+    BCN = new uint64_t[BCN_size];
+    for (size_t i=0; i<BCN_size; ++i) BCN[i]=0;
+
     // tmp=0;
     uint64_t mask_k = -1;
     mask_k = mask_k << (64-kmer_l) >> (64-kmer_l);
     // cout << std::bitset<64>(mask_k) << endl;
     string bc(dna_f);
-    size_t bc_index=0;
+    uint64_t bc_index=1;
+    uint64_t BCN_index, BCN_len, tk;
     for (size_t i=0, index; i<dna_z; ++i)
     {
         tmp = (tmp << 2) | get_c[dna_f[i]];
@@ -221,11 +229,42 @@ int main()
                 {
                     // cout << std::bitset<64>(tar) << endl;
                     // cout << std::bitset<64>(io_info[index]) << endl;
+                    BCN_index = (io_info[index]&mask_index);
+                    BCN_len = ((io_info[index]&mask_in) >> 32);
+                    tk = BCN_index;
+                    //the BC index is start from 1
+                    while (tk<BCN_size && BCN[tk])
+                        tk++;
+                    if (tk < (BCN_index + BCN_len))
+                    {
+                        // for (size_t u=BCN_index; u<BCN_index+BCN_len; ++u)
+                        //     cout << BCN[u] << endl;
+                        BCN[tk] = bc_index;
+
+                        // if (tk + 1 == BCN_index + BCN_len)
+                        // for (size_t u=BCN_index; u<BCN_index+BCN_len; ++u)
+                        //     cout << BCN[u] << endl;
+                        // cout << "---\n";
+                        // cout << "---" << tar << endl
+                        //      << BCN_index << " " << BCN_len << endl
+                        //      << std::bitset<64>(io_info[index]) << endl;
+                    }
+                    else
+                    {
+                        cout << "something wrong! attention! build BCN out of range\n";
+                        // cout << tar << endl
+                        //      << std::bitset<64>(io_info[index]) << endl;
+                        // for (size_t u=BCN_index; u<BCN_index+BCN_len; ++u)
+                        //     cout << BCN[u] << endl;
+                    }
+
                 }
             }
         }
     }
 
+    // for (size_t i=0; i<BCN_size; ++i)
+    //     cout << i << " " << BCN[i] << endl;
   	//-----------------------------------use K2 and K2c to construct FM-index
     //-----------------------------------handel the last k-1 k_mer (ATG$, TG$, G$)
     //-----------------------------------insert in BWT, concern as case 1 
