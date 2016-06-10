@@ -143,27 +143,44 @@ int main()
     {
         tmp = (tmp << 2) | get_c[dna_f[i]];
     }
-    uint64_t first_kmer = tmp << (64 - kmer_l) >> 2;
-    size_t first_p=-1;
+    uint64_t begin_kmer = tmp << (64 - kmer_l) >> 2, next_kmer, now_kmer;
+    size_t begin_index=-1;
 
     for (size_t i=0, j, k; i<k2len;)
     {
         is_in=false; is_out=false; tmp_mask=0; open=false;
         j = i+1;
-        if (K2[i]&mask_c == first_kmer) 
+        now_kmer = K2[i]&mask_c;
+        if (K2[i]&mask_c > begin_kmer && begin_kmer >= last) 
         {
             open=true;
             is_in = true;
             if ((K2[i]&mask_r)>>(64-kmer2_l) != get_c[dna_f[kmer]]) is_out = true;
         }
-        while (j<k2len && ((K2[j]&mask_c) == (K2[i]&mask_c)))
+        //if kmer exit in Kmer+2 then check is_out & is_in
+        while (j<k2len && ((K2[j]&mask_c) == (now_kmer)))
         {
             if ((K2[j]&mask_l) != (K2[i]&mask_l)) is_out = true;
             if ((K2[j]&mask_r) != (K2[i]&mask_r)) is_in = true;
             // if (is_in || is_out) printf("asd\n");
             ++j;
         }
-        else if (is_in || is_out)
+        if (i!=j)
+        {
+            next_kmer = K2[j]&mask_c;
+            if (begin_kmer >= now_kmer && begin_kmer < next_kmer)
+            {
+                if (begin_kmer == now_kmer)
+                {
+
+                }
+                else
+                {
+                    
+                }
+            }
+        }
+        if (is_in || is_out)
         {
             // cout << "Bin\n";
             if (is_out) tmp_mask = tmp_mask|mask_out;
@@ -195,7 +212,6 @@ int main()
             // }
         }
         i = j;
-
     }
 
     //-----------------------------------for each k_mer in dna string, use binary search to find k_mer in K
