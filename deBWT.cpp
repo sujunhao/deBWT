@@ -19,6 +19,8 @@ uint64_t get_c[] = {0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 
                     3};
 
 
+string dna_name, dna_s, dna_f;
+
 size_t KMER=20;
 size_t KMER_N=4864385;
 //ie. kmer len 20, kmer2 22, kmer_l, 20*2 kmer2_l 22*2, k2len the K2 len, klen, the K len
@@ -33,6 +35,12 @@ bool cmp(const uint64_t a, const uint64_t b)
     return ((a<<2) < (b<<2));
 }
 
+string *last_string;
+bool first_cmp(const string a, const string b)
+{
+    
+    return a.substr(1) < b.substr(1);
+}
 
 bool bwt_cmp(const uint64_t a, const uint64_t b)
 {
@@ -43,7 +51,7 @@ bool bwt_cmp(const uint64_t a, const uint64_t b)
         ++tb;
     }
     if (ta==bc_index) return true;
-    if (tb==bc_index) return true;
+    if (tb==bc_index) return false;
     return (bc[ta>>3] < bc[tb>>3]);
 }
 
@@ -76,7 +84,6 @@ int main()
 
 
     //-----------------------------------get dna_ref string
-    string dna_name, dna_s, dna_f;
     getline(inRef, dna_name);
     while (inRef >> dna_s) dna_f.append(dna_s);
     size_t dna_z=dna_f.size();
@@ -235,7 +242,7 @@ int main()
     uint64_t mask_k = -1;
     mask_k = mask_k << (64-kmer_l) >> (64-kmer_l);
     // cout << std::bitset<64>(mask_k) << endl;
-    bc = string(dna_z, ' ');
+    bc = dna_f;
     bc_index=1;
     uint64_t BCN_index, BCN_len, tk, tmp_i;
     uint64_t sum = 0;
@@ -287,13 +294,13 @@ int main()
                             BCN[tk] = (bc_index << 3)|get_c[dna_f[i-kmer]];
                         else 
                             BCN[tk] = (bc_index << 3)|4;
-                        if (tk + 1 == BCN_index + BCN_len)
-                        {
-                            for (size_t u=BCN_index; u<BCN_index+BCN_len; ++u)
-                            cout << BCN[u] << endl;
-                            cout << "---\n";
-                            sum += BCN_len;
-                        }
+                        // if (tk + 1 == BCN_index + BCN_len)
+                        // {
+                        //     for (size_t u=BCN_index; u<BCN_index+BCN_len; ++u)
+                        //     cout << BCN[u] << endl;
+                        //     cout << "---\n";
+                        //     sum += BCN_len;
+                        // }
                         // cout << "---" << tar << endl
                         //      << BCN_index << " " << BCN_len << endl
                         //      << std::bitset<64>(io_info[index]) << endl;
@@ -311,11 +318,12 @@ int main()
             }
         }
     }
-    cout << bc << endl;
+    bc.erase(bc.begin()+bc_index, bc.end());
+    // cout << bc << endl;
     cout << "the init dna string len is: " << dna_z << endl
     << "the branch string len is: " << bc_index << endl
     << "bc/dna_z: " << (double)bc_index/dna_z << endl;
-    return 0;
+
     // if (sum != BCN_size) cout << "wrong\n" << endl;
     // for (size_t i=0; i<BCN_size; ++i)
     //     cout << i << " " << BCN[i] << endl;
@@ -329,6 +337,22 @@ int main()
     uint8_t *BWT, tmp_code;
     BWT = new uint8_t[dna_z];
     size_t bwt_index = 0;
+    //construct the last kmer
+
+    last_string = new string[kmer+1];
+    for (size_t i=0; i<=kmer; ++i)
+    {
+        last_string[bwt_index] = dna_f.substr(dna_z-kmer+i-1, kmer-i+1);
+        ++bwt_index;
+        // cout << last_string[bwt_index-1] << endl;
+    }
+    sort(last_string, last_string+bwt_index, first_cmp);
+    for (size_t i=0; i<bwt_index; ++i)
+    {
+        // cout << last_string[i] << endl;
+        BWT[i] = get_c[last_string[i][0]];
+    }
+
     for (size_t i=0, j, tmp_index=0, index; i<k2len;)
     {
         //find the io_info and check if mulip in
@@ -361,8 +385,15 @@ int main()
         if (is_in)
         {
             BCN_index = (tmp_mask&mask_index);
-            BCN_len = (tmp_mask&mask_in) >> 32;
-            sort(BCN+theindex, BCN+BCN_index+BCN_len, bwt_cmp);
+            BCN_len = ((tmp_mask&mask_in) >> 32);
+            // cout << std::bitset<64>(tmp_mask) << endl;
+            // cout << BCN_index <<endl;
+            // for (size_t o=BCN_index; o<BCN_index+BCN_len; ++o)
+            // {
+            //     cout << bc[o] << endl;
+            // }
+            sort(BCN+BCN_index, BCN+BCN_index+BCN_len, bwt_cmp);
+                // PX("asd");
             for (size_t k=theindex; k<BCN_index+BCN_len; ++k)
             {
                 BWT[bwt_index++] = BCN[k]&mask_code;
@@ -370,13 +401,13 @@ int main()
         }
         else
         {
-            tmp_num=0;    
+            tmp_num=0;   
             for (size_t k = i; k<j; ++k)
             {
                 tmp_num += (K2[k]&mask_n);
             }
-            tmp_code = K2[i]>>62;
-            while (tmp--)
+            tmp_code = get_c[K2[i]>>62];
+            while (tmp_num--)
             {
                 BWT[bwt_index++] = tmp_code;
             }
@@ -385,10 +416,10 @@ int main()
         
         i = j;
     }
-    for (size_t i=0; i<dna_z; ++i)
-    {
-        printf("%d ", BWT[i]);
-    }
+    // for (size_t i=0; i<dna_z; ++i)
+    // {
+    //     printf("%d ", BWT[i]);
+    // }
 	delete [] K2;
     delete [] K;
     delete [] io_info;
