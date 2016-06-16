@@ -49,7 +49,7 @@ int main()
     //-----------------------------------get dna_ref string
     getline(inRef, dna_name);
     while (inRef >> dna_s) dna_f.append(dna_s);
-    // dna_f = "AA";
+    dna_f = "CGCCTTAGTAAGTGATTTTC";
     dna_f.append("$");
     dna_z=dna_f.size();
 
@@ -60,8 +60,10 @@ int main()
 
     sort(thei, thei+dna_z, cmp);
     for (size_t i=0; i<dna_z; ++i)
+    {
         cout << dna_f[(thei[i]+dna_z-1)%dna_z];
-    cout  << endl;
+        if ((i+1)%80==0) cout << "\n";
+    }
     inRef.close();
 
     return 0;
