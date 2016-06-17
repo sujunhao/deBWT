@@ -153,7 +153,7 @@ int main()
     mask_in = mask_in >> 32 << 32 << 1 >> 1;
     mask_index = mask_index << 32 >> 32;
 
-    bool is_in=false, is_out=false, check_open=false;
+    bool is_in=false, is_out=false;
     // cout << std::bitset<64>(mask_out) << endl << std::bitset<64>(mask_in) << endl;
     // std::bitset<64>(mask_index)<< endl;
 
@@ -171,7 +171,7 @@ int main()
     // cout << std::bitset<64>(begin_kmer) << endl;
     for (size_t i=0, j, k; i<k2len;)
     {
-        is_in=false; is_out=false; tmp_mask=0; check_open=false;
+        is_in=false; is_out=false; tmp_mask=0;
         tmp_num=0;
 
         j = i+1;
@@ -180,7 +180,6 @@ int main()
         //insert the first kmer into proper site (begin_kmer>last_kmer for begin kmer may = 0)
         if (now_kmer >= begin_kmer && begin_kmer >= last_kmer) 
         {
-            check_open=true;
             if (now_kmer == begin_kmer)
             {
                 is_in = true;
@@ -209,10 +208,6 @@ int main()
                     tmp_num += (K2[k]&mask_n);
                 }
                 tmp_mask = tmp_mask|theindex;
-                if (check_open) 
-                {
-                    ++tmp_num;
-                }
                 tmp_mask = tmp_mask|(tmp_num<<32);
                 theindex += tmp_num;
             }
@@ -311,11 +306,7 @@ int main()
                 {
                     // cout << std::bitset<64>(tar) << endl;
                     // cout << std::bitset<64>(io_info[index]) << endl;
-                    if (i+1<dna_z)
-                    {
-                        bc[bc_index++] = dna_f[i+1];
-                    }
-
+                    bc[bc_index++] = dna_f[i+1];
                 }
             }
         }
@@ -358,12 +349,13 @@ int main()
     for (size_t i=0, j, tmp_index=0, l_index=0, index; i<k2len;)
     {
         //find the io_info and check if mulip in
-        is_in=false; is_out=false; tmp_mask=0; check_open=false;
+        is_in=false; is_out=false; tmp_mask=0;
         j = i+1;
         now_kmer = K2[i]&mask_c;
-        while (l_index < kmer+1 && (last_string[l_index]&mask_c) < now_kmer)
+        while (l_index < kmer+1 && (last_string[l_index]&mask_c) <= now_kmer)
         {
             BWT[bwt_index++] = ((last_string[l_index++]&mask_l)>>62);
+            // BWT[bwt_index-1] = 4;
         }
         if (now_kmer >= begin_kmer && begin_kmer >= last_kmer) 
         {
