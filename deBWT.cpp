@@ -378,7 +378,13 @@ int main()
             ++j;
         }
         if (is_in || is_out)
+        {
+            if (K[tmp_index] == (now_kmer >> (64-kmer2_l-2)))
+            {
+                PX("asd");
+            }
             tmp_mask = io_info[tmp_index++];
+        }
         if (is_in)
         {
             BCN_index = (tmp_mask&mask_index);
@@ -413,12 +419,12 @@ int main()
         
         i = j;
     }
-    char cc[5]={'A', 'C', 'G', 'T', '$'};
-    for (size_t i=0; i<dna_z; ++i)
-    {
-        printf("%c", cc[BWT[i]]);
-        if ((i+1)%80==0) cout << "\n";
-    }
+    char cc[6]={'A', 'C', 'G', 'T', '$', 'X'};
+    // for (size_t i=0; i<=dna_z; ++i)
+    // {
+    //     printf("%c", cc[BWT[i]]);
+    //     if ((i+1)%80==0) cout << "\n";
+    // }
 	delete [] K2;
     delete [] K;
     delete [] io_info;
