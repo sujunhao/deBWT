@@ -10,7 +10,7 @@ jellyfish dump mer_counts.jf >| mer_counts_dumps.fa
 
 end=`date +%s`
 runtime=$((end-start))
-echo "mer_counts time use   : $runtime 's"
+echo "Kmer counting time use  : $runtime 's"
 
 
 (make)
@@ -20,4 +20,4 @@ start=$end
 
 end=`date +%s`
 runtime=$((end-start))
-echo "bwt construct time use: $runtime 's"
+echo "BWT construct time use  : $runtime 's"

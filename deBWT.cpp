@@ -67,7 +67,6 @@ int main(int argc, char** argv)
     int c;
     opterr = 0;
 	char i_f[100]="E.coli.fa";
-	char o_f[100]="out";
     char j_f[100]="mer_counts_dumps.fa";
     //set argument,p for PointerListLen,w for WindowListLen,f for dna_read file(if the -pwf is provided, argument is required)
     while ((c = getopt (argc, argv, "k:d:m:n:h")) != -1) 
@@ -109,9 +108,7 @@ int main(int argc, char** argv)
     //           << "| dna file: " << string(i_f) << endl;
 
     ifstream inRef;
-    ofstream out;
     inRef.open(i_f);
-    out.open(o_f);
 
     FILE *inJF;
     inJF = fopen(j_f, "rb");
@@ -444,7 +441,6 @@ int main(int argc, char** argv)
     delete [] BCN;
     delete [] BWT;
     inRef.close();
-    out.close();
     fclose(inJF);
 
     // printf("Time used = %.2f\n",  (double)clock() / CLOCKS_PER_SEC);
