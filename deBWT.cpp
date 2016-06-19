@@ -425,7 +425,6 @@ int main(int argc, char** argv)
                 BWT[bwt_index++] = tmp_code;
             }
         }
-        
         i = j;
     }
 
