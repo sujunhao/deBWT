@@ -1,6 +1,6 @@
 # deBWT
 
-[deBWT](http://www.ncbi.nlm.nih.gov/pubmed/27307614) (de Bruijn branch-based BWT constructor ) is a parallelizable [BWT](http://www.cs.jhu.edu/~langmea/resources/bwt_fm.pdf) constructing algorithm
+[deBWT](http://bioinformatics.oxfordjournals.org/content/32/12/i174.long) (de Bruijn branch-based BWT constructor ) is a parallelizable [BWT](http://www.cs.jhu.edu/~langmea/resources/bwt_fm.pdf) constructing algorithm
 
 deBWT uses de Bruijn graph to reduce the time consumed in the repeating regions when constructing BWT
 
