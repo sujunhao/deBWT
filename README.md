@@ -5,12 +5,10 @@
 deBWT uses de Bruijn graph to reduce the time consumed in the repeating regions when constructing BWT
 
 Firstly, deBWT counts the kmers existed on target string. 
-
 Then it uses kmers to construct the de Bruijn implicitly.
+Then it uses the graph to construct BWT.
 
-Then it uses the graph to construct BWT
-
-usage
+> usage
 
 ```
 #should specify the target string and kmer length
