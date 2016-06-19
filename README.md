@@ -17,9 +17,10 @@ deBWT.sh file.fa kmer_len
 
 #example
 >./deBWT.sh E.coli.fa 20
-mer_counts time use   : 8 's
+Kmer counting time use  : 7 's
 g++ deBWT.cpp -o deBWT
-bwt construct time use: 7 's
+BWT construct time use  : 7 's
+
 
 #the output bwt file  is *.bwt in current dir
 ```
