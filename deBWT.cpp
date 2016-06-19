@@ -171,6 +171,7 @@ int main()
     // cout << std::bitset<64>(begin_kmer) << endl;
     for (size_t i=0, j, k; i<k2len;)
     {
+        // if (i>100000) break;
         is_in=false; is_out=false; tmp_mask=0;
         tmp_num=0;
 
@@ -192,11 +193,16 @@ int main()
         //if kmer exit in Kmer+2 then check is_out & is_in
         while (j<k2len && ((K2[j]&mask_c) == (now_kmer)))
         {
-            if ((K2[j]&mask_l) != (K2[i]&mask_l)) is_out = true;
-            if ((K2[j]&mask_r) != (K2[i]&mask_r)) is_in = true;
+            if ((K2[j]&mask_l) != (K2[i]&mask_l)) is_in = true;
+            if ((K2[j]&mask_r) != (K2[i]&mask_r)) is_out = true;
             // if (is_in || is_out) printf("asd\n");
             ++j;
         }
+        // cout << "----\n";
+        // for (k = i; k<j; ++k)
+        // {
+        //     cout << std::bitset<64>(K2[k]) << endl;
+        // }
         if (is_in || is_out)
         {
             // cout << "Bin\n";
@@ -215,16 +221,16 @@ int main()
             K[klen] = (K2[i]&mask_c) >> (64-kmer2_l+2);
             ++klen;
             // {
-            //     // cout << "Asd";
+                // cout << "*****\n";
 
-            //     cout << i << " " << j << endl << std::bitset<64>(K[klen-1]) << endl << std::bitset<64>(io_info[klen-1]) << endl
-            //     << (io_info[klen-1]<<1>>1>>32) << endl;
+                // cout << std::bitset<64>(K[klen-1]) << endl << "i: " << std::bitset<64>(io_info[klen-1]) << endl;
+                // << (io_info[klen-1]<<1>>1>>32) << endl;
                 
             // }
         }
+        // cout << "--\n";
         i = j;
     }
-
     //-----------------------------------for each k_mer in dna string, use binary search to find k_mer in K
     //-----------------------------------if is multip out, construct branch code (index++)
     //-----------------------------------if is multip in, store the branch code index(**** index should +1 ****)
@@ -248,13 +254,21 @@ int main()
         {
             tar = tmp&mask_k;
             index = search_k(tar);
+            // if (i<100)
+            // {
+            //     cout << std::bitset<64>(tar) << endl;
+            //     // cout << std::bitset<64>(K[index]) << endl;
+            //     cout << index << endl;
+            //     cout << "~~~~\n";
+            // }
             if (index!=-1)
             {
-                // cout << std::bitset<64>(tar) << endl;
-                // cout << index << endl;
-                // if (index != -1)
-                // cout << std::bitset<64>(K[index]) << endl;
-                // cout << "~~~~\n";
+                // if (i<100000)
+                // {
+                //     cout << std::bitset<64>(tar) << endl;
+                //     cout << std::bitset<64>(K[index]) << endl;
+                //     cout << "~~~~\n";
+                // }
 
 
                 tmp_i = io_info[index];
@@ -346,14 +360,19 @@ int main()
     //     cout << std::bitset<64>(last_string[i]) << endl;
     // }
 
+    char cc[6]={'A', 'C', 'G', 'T', '$', 'X'};
     for (size_t i=0, j, tmp_index=0, l_index=0, index; i<k2len;)
     {
         //find the io_info and check if mulip in
+        // if (i>100000) break;
         is_in=false; is_out=false; tmp_mask=0;
         j = i+1;
         now_kmer = K2[i]&mask_c;
         while (l_index < kmer+1 && (last_string[l_index]&mask_c) <= now_kmer)
         {
+            // cout << std::bitset<64>(last_string[l_index]) << endl;
+            // cout << cc[((last_string[l_index++]&mask_l)>>62)];
+
             BWT[bwt_index++] = ((last_string[l_index++]&mask_l)>>62);
             // BWT[bwt_index-1] = 4;
         }
@@ -365,24 +384,29 @@ int main()
             }
             else
             {
+                // cout << cc[4];
+                // cout << std::bitset<64>(begin_kmer) << endl;
+
                 BWT[bwt_index++] = 4;
             }
             //else if the begin_kmer no appear in K2, no need to create the io_info of begin_kmer
         }
         last_kmer = now_kmer;
-        while (j<k2len && ((K2[j]&mask_c) == (K2[i]&mask_c)))
+        while (j<k2len && ((K2[j]&mask_c) == now_kmer))
         {
-            if ((K2[j]&mask_l) != (K2[i]&mask_l)) is_out = true;
-            if ((K2[j]&mask_r) !=( K2[i]&mask_r)) is_in = true;
+            if ((K2[j]&mask_l) != (K2[i]&mask_l)) is_in = true;
+            if ((K2[j]&mask_r) !=( K2[i]&mask_r)) is_out = true;
             // if (is_in || is_out) printf("asd\n");
             ++j;
         }
         if (is_in || is_out)
         {
-            if (K[tmp_index] == (now_kmer >> (64-kmer2_l-2)))
-            {
-                PX("asd");
-            }
+            // if (K[tmp_index] != (now_kmer >> (64-kmer2_l+2)))
+            // {
+            //     cout << std::bitset<64>(K[tmp_index]) << endl;
+            //     cout << std::bitset<64>((now_kmer >> (64-kmer2_l+2))) << endl;
+            //     PX("asd");
+            // }
             tmp_mask = io_info[tmp_index++];
         }
         if (is_in)
@@ -397,34 +421,46 @@ int main()
             // }
             sort(BCN+BCN_index, BCN+BCN_index+BCN_len, bwt_cmp);
                 // PX("asd");
+            // cout << "----\n";
+            // for (size_t k = i; k<j; ++k)
+            // {
+            //     cout << std::bitset<64>(K2[k]) << endl;
+            // }
+            // cout << "--\n";
             for (size_t k=BCN_index; k<BCN_index+BCN_len; ++k)
             {
                 BWT[bwt_index++] = BCN[k]&mask_code;
+                // cout << std::bitset<64>(K2[k]) << endl;
+                // cout << cc[BWT[bwt_index-1]] << endl;
             }
+            // cout << "    --------------\n";
         }
         else
         {
-            tmp_num=0;   
+            tmp_num=0;  
+            // cout << "*****\n"; 
             for (size_t k = i; k<j; ++k)
             {
+                // cout << std::bitset<64>(K2[k]) << endl;
                 tmp_num += (K2[k]&mask_n);
             }
             tmp_code = ((K2[i]&mask_l)>>62);
             while (tmp_num--)
             {
                 BWT[bwt_index++] = tmp_code;
+                // cout << cc[BWT[bwt_index-1]];
             }
+            // cout << "     *******\n";
         }
         
         
         i = j;
     }
-    char cc[6]={'A', 'C', 'G', 'T', '$', 'X'};
-    // for (size_t i=0; i<=dna_z; ++i)
-    // {
-    //     printf("%c", cc[BWT[i]]);
-    //     if ((i+1)%80==0) cout << "\n";
-    // }
+    for (size_t i=0; i<=dna_z; ++i)
+    {
+        printf("%c", cc[BWT[i]]);
+        if ((i+1)%80==0) cout << "\n";
+    }
 	delete [] K2;
     delete [] K;
     delete [] io_info;
