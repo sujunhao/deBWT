@@ -71,7 +71,7 @@ int main()
     //-----------------------------------get dna_ref string
     getline(inRef, dna_name);
     while (inRef >> dna_s) dna_f.append(dna_s);
-    dna_f = "ATCGTTCGCG";
+    dna_f = "AGCTAGGGTC";
     dna_f.append("$");
     dna_z=dna_f.size();
 
@@ -95,12 +95,14 @@ int main()
         // cout << BWT[i];
         // if ((i+1)%80==0) cout << "\n";
     }
-    cout << dna_f << endl << BWT << endl;
+    cout << "ref: " << dna_f << endl << "bwt: " << BWT << endl;
+    puts("");
 
     //count the ATCG in C[] and rank[pos, char] to indicate 0-pos have how many same char in BWT
     uint64_t C[4] = {0, 0, 0, 0};
     uint64_t *(rank[4]), gap = 4;
     for (size_t i=0; i<4; ++i) rank[i] = new uint64_t[dna_z/gap];
+        printf("SA_i  BWT_i BWT   Origin\n");
     for (size_t i=0; i<dna_z; ++i)
     {
         if (BWT[i]!='$' ) 
@@ -114,10 +116,15 @@ int main()
 
         }
 
-        cout << BWT[i];
-        if ((i+1)%gap == 0) cout << " " << rank[0][i/gap] << " " << rank[1][i/gap] << " " << rank[2][i/gap] << " " << rank[3][i/gap] << endl;
-        else cout << endl;
+        printf("%3d   %3d   ", (int)thei[i], (int)i);
+        cout << " " << BWT[i] << "    " ;
+        for (size_t u=0, t=thei[i]; u<dna_z; ++u) cout << dna_f[(u+t)%dna_z];
+        cout << endl;
+        // if ((i+1)%gap == 0) cout << " " << rank[0][i/gap] << " " << rank[1][i/gap] << " " << rank[2][i/gap] << " " << rank[3][i/gap] << endl;
+        // else cout << endl;
     }
+    puts("");
+
     uint64_t Count[4];
     for (size_t i=0; i<4; i++)
     {
@@ -128,23 +135,24 @@ int main()
 
 
 
-    string P="CG";
+    string P="CTAGGG";
+    cout << "find the pattern: " << P << endl;
     size_t P_size= P.size(), ec=get_c[P[P_size-1]];
     size_t first=Count[ec], last=Count[ec]+C[ec]-1;
 
     size_t P_i=P_size-2, offset;
 
-    cout << first << " " << last << endl;
+    cout << "\nfirst and last index: " << first << " " << last << endl;
     // for (size_t i=0; i<dna_z; ++i)
     // {
     //     cout << " " << get_rank(i, 0, rank, gap) << " " << get_rank(i, 1, rank, gap) << " " << get_rank(i, 2, rank, gap) << " " << get_rank(i, 3, rank, gap) << endl;
     // }
-    while (P_size>1 && P_i >= 0 && first < last)
+    while (P_size>1 && P_i >= 0 && first <= last)
     {
         offset = Count[get_c[P[P_i]]];
         first = offset + get_rank(first-1, get_c[P[P_i]], rank, gap);
         last = offset + get_rank(last, get_c[P[P_i]], rank, gap)-1;
-        cout << first << " " << last << endl;
+        cout << "first and last index: "<< first << " " << last << endl;
 
         // cout << get_rank(first-1, get_c[P[P_i]], rank, gap) << " " << first << " " << last << endl;
         if (P_i==0) break;
