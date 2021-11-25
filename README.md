@@ -1,12 +1,14 @@
 # deBWT
 
-[deBWT](http://bioinformatics.oxfordjournals.org/content/32/12/i174.long) (de Bruijn branch-based BWT constructor ) is a parallelizable [BWT](http://www.cs.jhu.edu/~langmea/resources/bwt_fm.pdf) constructing algorithm
+Implementation of [deBWT](http://bioinformatics.oxfordjournals.org/content/32/12/i174.long) (de Bruijn branch-based BWT constructor ), which is a parallelizable [BWT](http://www.cs.jhu.edu/~langmea/resources/bwt_fm.pdf) constructing algorithm
 
-deBWT uses de Bruijn graph to reduce the time consumed in the repeating regions when constructing BWT
+deBWT uses the de Bruijn graph to reduce the time consumed in the repeating regions when constructing BWT
 
-Firstly, deBWT counts the kmers existed on target string. 
-Then it uses kmers to construct the de Bruijn implicitly.
-Then it uses the graph to construct BWT.
+step:
+1. deBWT counts the kmers existing on the target string. 
+2. uses kmers to construct the de Bruijn graph implicitly.
+3. uses the graph to construct BWT.
+
 
 > usage
 
